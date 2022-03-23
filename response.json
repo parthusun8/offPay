@@ -1,0 +1,21 @@
+{
+  "ToCountry": "US",
+  "ToState": "CA",
+  "SmsMessageSid": "SMb91390ccd869adf3bfac6b814a43aa62",
+  "NumMedia": "0",
+  "ToCity": "ADELANTO",
+  "FromZip": "",
+  "SmsSid": "SMb91390ccd869adf3bfac6b814a43aa62",
+  "FromState": "Madhya Pradesh / Chhattisgarh",
+  "SmsStatus": "received",
+  "FromCity": "",
+  "Body": "hi parth😐😐😐",
+  "FromCountry": "IN",
+  "To": "+17603889319",
+  "ToZip": "92301",
+  "NumSegments": "1",
+  "MessageSid": "SMb91390ccd869adf3bfac6b814a43aa62",
+  "AccountSid": "AC16390f8f5549156e74f85bb8621232de",
+  "From": "+919301159376",
+  "ApiVersion": "2010-04-01"
+}
