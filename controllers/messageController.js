@@ -1,3 +1,5 @@
+const MessagingResponse = require("twilio").twiml.MessagingResponse;
+
 function decrypt(message) {
   let decrypt = message.split("");
   for (var i = 0; i < decrypt.length; i++) {
@@ -54,19 +56,29 @@ function decrypt(message) {
   return { amount: amount, to: to };
 }
 
-app.post("/message", function (req, res) {
-  //   console.log(req.body);
-  var msgFrom = req.body.From;
-  var msgBody = req.body.Body;
-  console.log(msgFrom, msgBody);
+const msgReply = async (req, res) => {
+  console.log(req.body);
+  try {
+    var msgFrom = req.body.From;
+    var msgBody = req.body.Body;
+    console.log(msgFrom, msgBody);
 
-  const msg = decrypt(msgBody);
+    const msg = decrypt(msgBody);
+    console.log("Message = ", msg);
 
-  const twiml = new MessagingResponse();
+    const twiml = new MessagingResponse();
+    console.log("TWIMIL", twiml);
 
-  const message = twiml.message();
-  message.body(`Payment successful for amount : ${msg.amount} to :${msg.to}`);
+    const message = twiml.message();
+    message.body(`Payment successful for amount : ${msg.amount} to :${msg.to}`);
+    console.log("Message body", message);
+    res.writeHead(200, { "Content-Type": "text/xml" });
+    res.end(twiml.toString());
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+};
 
-  res.writeHead(200, { "Content-Type": "text/xml" });
-  res.end(twiml.toString());
-});
+module.exports = {
+  msgReply,
+};

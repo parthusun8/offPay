@@ -59,7 +59,7 @@ const user_register = async (req, res) => {
     res.send(uid);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Server Error");
+    res.status(200).send(err.message);
   }
 };
 
@@ -67,9 +67,10 @@ const logout = async (req, res, next) => {
   try {
     await signOut(auth);
     console.log("User successfully logged out");
+    res.status(200).send("User Successfully Logged Out");
   } catch (err) {
     console.error(err.message);
-    res.status(500).send("Logout error");
+    res.status(500).send(err.message);
   }
   res.end();
 };
