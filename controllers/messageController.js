@@ -57,21 +57,22 @@ function decrypt(message) {
 }
 
 const msgReply = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   try {
     var msgFrom = req.body.From;
+    // console.log(msgFrom);
     var msgBody = req.body.Body;
-    console.log(msgFrom, msgBody);
+    // console.log(msgFrom, msgBody);
 
     const msg = decrypt(msgBody);
-    console.log("Message = ", msg);
+    // console.log("Message = ", msg);
 
     const twiml = new MessagingResponse();
-    console.log("TWIMIL", twiml);
+    // console.log("TWIMIL", twiml);
 
     const message = twiml.message();
     message.body(`Payment successful for amount : ${msg.amount} to :${msg.to}`);
-    console.log("Message body", message);
+    // console.log("Message body", message);
     res.writeHead(200, { "Content-Type": "text/xml" });
     res.end(twiml.toString());
   } catch (err) {
