@@ -18,6 +18,9 @@ const {
   updateDoc,
   deleteDoc,
   setDoc,
+  query,
+  where,
+  increment,
 } = require("firebase/firestore");
 
 const user_login = async (req, res) => {
@@ -33,8 +36,9 @@ const user_login = async (req, res) => {
     console.log(uid);
     res.send(uid);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Server Error");
+    console.error(err);
+
+    res.status(500).send(err.message);
   }
 };
 
@@ -63,6 +67,7 @@ const user_register = async (req, res) => {
       userData.middleName = "";
     }
     delete userData.loginPass;
+    userData.balance = 0;
     console.log(userData);
 
     //adding user to firestore
@@ -119,7 +124,7 @@ const monitor_AuthState = async (req, res, next) => {
 };
 
 // /api/users/getAllUsers
-const getAllUsers = async (req, res, next) => {
+const getAllUsers = async (req, res) => {
   try {
     const colref = collection(db, "users");
     const userSnapshot = await getDocs(colref);
@@ -132,6 +137,35 @@ const getAllUsers = async (req, res, next) => {
   }
 };
 
+// users/transaction
+const transaction = async (req, res) => {
+  // let transactionAmt = 400;
+  try {
+    const ToRef = doc(db, "users", req.body.To);
+    const FromRef = doc(db, "users", req.body.From);
+    const FromSnapshot = await getDoc(FromRef);
+    const fromData = FromSnapshot.data();
+    if (fromData.balance >= req.body.amount) {
+      console.log("Transaction is successful");
+      await updateDoc(FromRef, {
+        balance: increment(-1 * req.body.amount),
+      });
+      await updateDoc(ToRef, {
+        balance: increment(req.body.amount),
+      });
+      const newData = await getDoc(FromRef);
+      const ToSnapshot = await getDoc(ToRef);
+      console.log(newData.data());
+      console.log(ToSnapshot.data());
+    } else {
+      console.log("Transaction is not possible");
+    }
+    res.status(200).send("Good Boy");
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
 module.exports = {
   user_register,
   user_login,
@@ -139,4 +173,5 @@ module.exports = {
   monitor_AuthState,
   getAllUsers,
   getUserDetails,
+  transaction,
 };
