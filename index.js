@@ -16,3 +16,4 @@ app.get("/", (req, res) => {
 app.use("/users", require("./Routes/userRoutes"));
 app.use("/msg", require("./Routes/messageRouter"));
 app.listen(port);
+console.log(`Server running at http://${hostname}:${port}/`);
