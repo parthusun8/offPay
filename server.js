@@ -13,6 +13,7 @@ app.use(express.urlencoded({
 app.use(express.json());
 
 app.get("/", (req, res) => {
+  console.log("Hello World! FROM TWILIO");
   res.send("Hello World!");
 });
 app.use("/users", require("./Routes/userRoutes"));
