@@ -26,25 +26,25 @@
 // const user_login = async (req, res) => {
 //   try {
 //     const userData = req.body;
-//     console.log(userData.loginEmail, userData.loginPass);
+//     const loginEmail = userData.loginEmail.split(" ")[0];
+//     console.log(loginEmail, userData.loginPass);
 //     const userCredentials = await signInWithEmailAndPassword(
 //       auth,
-//       userData.loginEmail,
+//       loginEmail,
 //       userData.loginPass
 //     );
 //     const uid = userCredentials.user.uid;
 //     console.log(uid);
 //     res.send(uid);
 //   } catch (err) {
-//     console.error(err);
+//     console.error(err.code.split("/")[1]);
 
-//     res.status(500).send(err.message);
+//     res.status(500).send(err.code.split("/")[1]);
 //   }
 // };
 
 // // /api/users/signup
 // const user_register = async (req, res) => {
-//   // console.log("Hi");
 //   try {
 //     const userData = req.body;
 //     console.log(userData);
@@ -55,9 +55,13 @@
 //     );
 
 //     const uid = userCredentials.user.uid;
+//     // console.log("uuid :=> ", uid);
 //     userData.privateToken = "0000";
+//     // console.log("curr_user", userData);
 //     userData.publicId = uid;
-//     const fullName = userData.name.split(" ");
+//     // console.log("curr_user", userData);
+//     let fullName = userData.name;
+//     fullName = fullName.split(" ");
 //     userData.firstName = fullName[0];
 //     if (fullName.length == 3) {
 //       userData.middleName = fullName[1];
@@ -66,19 +70,18 @@
 //       userData.lastName = fullName[1];
 //       userData.middleName = "";
 //     }
-//     delete userData.loginPass;
 //     userData.balance = 0;
-//     console.log(userData);
-
+//     delete userData.name;
+//     delete userData.loginPass;
 //     //adding user to firestore
 //     const usersRef = doc(db, `users/${uid}`);
 //     await setDoc(usersRef, userData);
 //     console.log(uid);
 //     //updatingID
-//     res.send(uid);
+//     res.status(200).send(uid);
 //   } catch (err) {
-//     console.error(err.message);
-//     res.status(200).send(err.message);
+//     console.log(err.code.split("/")[1]);
+//     res.status(500).send(err.code.split("/")[1]);
 //   }
 // };
 
@@ -130,7 +133,7 @@
 //     const userSnapshot = await getDocs(colref);
 //     const userList = userSnapshot.docs.map((doc) => doc.data());
 //     console.log(userList);
-//     // res.send(userList);
+//     res.send(userList);
 //   } catch (err) {
 //     console.log(err.message);
 //     res.status(500).send("Server error");
@@ -157,21 +160,142 @@
 //       const ToSnapshot = await getDoc(ToRef);
 //       console.log(newData.data());
 //       console.log(ToSnapshot.data());
+//       res.status(200).send(ToSnapshot.data().firstName);
 //     } else {
 //       console.log("Transaction is not possible");
+//       res.status(300).send("Not Possible");
 //     }
-//     res.status(200).send("Good Boy");
 //   } catch (err) {
 //     console.log(err.message);
 //   }
 // };
 
+// module.exports = {
+//   user_register,
+//   user_login,
+//   logout,
+//   monitor_AuthState,
+//   getAllUsers,
+//   getUserDetails,
+//   transaction,
+// };
+
+const { uid } = require('../Helper/helper');
+const user = require('../models/user.model');
+
+const login_using_email = async (req, res) => {
+  try{
+    const {email, password} = req.body;
+    if(!email || !password){
+      res.status(201).send({error : "Please fill all the fields"});
+      return;
+    }
+    const result = await user.findOne({email : email});
+    if(!result){
+      res.status(202).send({error : "User Not found"});
+      return;
+    } else{
+      if(result.password === password){
+        res.status(200).send({
+          message : "success",
+          result : result
+        });
+        return;
+      } else{
+        res.status(203).send({error : "Incorrect Password"});
+        return;
+      }
+    }
+  } catch(e){
+    console.log(e);
+    res.status(500).send({error : "Internal Server Error"});
+  }
+}
+const login_using_phone = async (req, res) => {
+  try{
+    const {phone, password} = req.body;
+    if(!phone || !password){
+      res.status(201).send({error : "Please fill all the fields"});
+      return;
+    }
+    const result = await user.findOne({phone : phone});
+    if(!result){
+      res.status(202).send({error : "User Not found"});
+      return;
+    } else{
+      if(result.password === password){
+        res.status(200).send({
+          message : "success",
+          result : result
+        });
+        return;
+      } else{
+        res.status(203).send({error : "Incorrect Password"});
+        return;
+      }
+    }
+  } catch(e){
+    console.log(e);
+    res.status(500).send({error : "Internal Server Error"});
+  }
+}
+
+const register = async (req, res) => {
+  try{
+    const {name, email, password, phone, address} = req.body;
+    if(!name || !email || !password || !phone || !address){
+      res.status(201).send({error : "Please fill all the fields"});
+      return;
+    }
+    const result = await user.findOne({email : email}, {email : 1});
+    const result2 = await user.findOne({phone : phone});
+    // console.log(result);
+    console.log(result2);
+    if(result || result2){
+      res.status(202).send({error : "User already exists"});
+      return;
+    }
+
+    const publicId = uid();
+    const newUser = new user({
+      name : name,
+      phone: phone,
+      email: email,
+      address : address,
+      password : password,
+      publicId : publicId
+    });
+    console.log("New User is : " + publicId);
+    await newUser.save();
+    res.status(200).send({
+      message : "success",
+      publicId : publicId
+    });
+  } catch(e){
+    console.log(e);
+    res.status(500).send({error : "Server Error"});
+  }
+}
+
+const deleteUser = async(req, res) => {
+  try{
+    const {email} = req.body;
+    const result = await user.deleteOne({email : email});
+    console.log(result);
+    if(result.deletedCount){
+      res.status(200).send({message : "success"});
+    } else{
+      res.status(201).send({error : "Not Able to Delete User"});
+    }
+  } catch(e){
+    console.log(e);
+    res.status(500).send({error : "Server Error"});
+  }
+}
+
 module.exports = {
-  // user_register,
-  // user_login,
-  // logout,
-  // monitor_AuthState,
-  // getAllUsers,
-  // getUserDetails,
-  // transaction,
-};
+  register,
+  login_using_email,
+  login_using_phone,
+  deleteUser
+}

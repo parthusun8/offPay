@@ -3,6 +3,11 @@ var express = require("express");
 require('dotenv').config()
 const cors = require("cors");
 
+const mongoURI = "mongodb+srv://parth:dumdumoffpaydumdum@cluster.oajobzz.mongodb.net/Offpay?retryWrites=true&w=majority";  
+const { default: mongoose } = require('mongoose');
+mongoose.connect(mongoURI);
+console.log('Connected to DB');
+const userRouter = require("./Routes/userRoutes");
 const app = express();
 app.use(cors());
 app.set('view engine', 'ejs')
@@ -11,6 +16,9 @@ app.use(express.urlencoded({
   extended: true
 }));
 app.use(express.json());
+
+app.use(userRouter);
+
 
 app.get("/", (req, res) => {
   console.log("Hello World! FROM TWILIO");

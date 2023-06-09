@@ -3,6 +3,11 @@ const userController = require("../controllers/userController");
 
 const router = express.Router();
 
+router.post("/register", userController.register);
+router.post("/loginWithEmail", userController.login_using_email);
+router.post("/loginWithPhone", userController.login_using_phone);
+router.post("/deleteUser", userController.deleteUser);
+
 // /api/users/........
 // router.post("/signup", userController.user_register);
 // router.post("/login", userController.user_login);
