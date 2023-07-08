@@ -62,8 +62,8 @@ const login_using_phone = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    const { name, email, password, phone, address, pin } = req.body;
-    if (!name || !email || !password || !phone || !address || !pin) {
+    const { name, email, password, phone, pin } = req.body;
+    if (!name || !email || !password || !phone || !pin) {
       res.status(201).send({ error: "Please fill all the fields" });
       return;
     }
@@ -81,7 +81,6 @@ const register = async (req, res) => {
       name: name,
       phone: phone,
       email: email,
-      address: address,
       password: password,
       publicId: publicId,
       privateToken : pin
