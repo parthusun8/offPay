@@ -192,6 +192,28 @@ const transaction = async (req, res) => {
   }
 }
 
+const addBalance = async (req, res) => {
+  try{
+    const {publicId, amount} = req.body;
+
+    const result = await user.updateOne({
+      publicId: publicId,
+    }, {
+      $inc: {
+        balance: amount,
+      }
+    });
+    if(result){
+      res.status(200).send({message: "success"});
+    } else{
+      res.status(201).send({error: "Not Able to Add Balance"});
+    }
+  } catch(err){
+    console.log(err);
+    res.status(500).send({ error: "Server Error" });
+  }
+}
+
 module.exports = {
   register,
   login_using_email,
