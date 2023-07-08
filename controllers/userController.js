@@ -83,7 +83,8 @@ const register = async (req, res) => {
       email: email,
       password: password,
       publicId: publicId,
-      privateToken : pin
+      privateToken : pin,
+      balance: 500
     });
     console.log("New User is : " + publicId);
     await newUser.save();
@@ -120,7 +121,7 @@ const transaction = async (req, res) => {
     console.log(msgFrom);
     var msgBody = req.body.Body;
     console.log("msgBody : ");
-    console.log(msgFrom);
+    console.log(msgBody);
 
     // const msg = decrypt(msgBody);
     const msg = msgBody.split(",");
@@ -146,23 +147,31 @@ const transaction = async (req, res) => {
       message.body(`Payment failed, Try Again Later`);
     } else{
       if(sender.balance >= data.amount){
+        console.log("sender.balance : ");
+        console.log(sender.balance);
+        console.log("data.amount : ");
+        console.log(data.amount);
         const inc = await user.updateOne({
-          phone: data.To,
+          publicId: data.To,
         }, {
           $inc: {
             balance: data.amount,
           },
         });
+        console.log("inc : ");
+        console.log(inc.modifiedCount);
         const dec = await user.updateOne({
-          phone: data.From,
+          publicId: data.From,
         }, {
           $inc: {
             balance: -data.amount,
           },
         });
-        if(inc.matchedCount && dec.matchedCount){
+        console.log("dec : ");
+        console.log(dec.modifiedCount);
+        if(inc && dec){
           message.body(
-            `Payment successful for amount : ${data.amount} to :${data.To}`
+            `Payment successful for amount : ${data.amount} to ${receiver.name}`
           );
         } else{
           message.body(

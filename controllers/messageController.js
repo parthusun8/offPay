@@ -1,63 +1,54 @@
-const MessagingResponse = require("twilio").twiml.MessagingResponse;
+// const MessagingResponse = require("twilio").twiml.MessagingResponse;
 
-const axios = require("axios");
+// const axios = require("axios");
 
-const msgReply = async (req, res) => {
-  // console.log(req.body);
-  try {
-    var msgFrom = req.body.From;
-    // console.log(msgFrom);
-    var msgBody = req.body.Body;
-    // console.log(msgFrom, msgBody);
+// const msgReply = async (req, res) => {
+//   // console.log(req.body);
+//   try {
+//     var msgFrom = req.body.From;
+//     // console.log(msgFrom);
+//     var msgBody = req.body.Body;
+//     // console.log(msgFrom, msgBody);
 
-    // const msg = decrypt(msgBody);
-    const msg = msgBody.split(",");
-    data = {
-      To: msg[0],
-      From: msg[1],
-      amount: parseInt(msg[2]),
-    };
+//     // const msg = decrypt(msgBody);
+//     const msg = msgBody.split(",");
+//     data = {
+//       To: msg[0],
+//       From: msg[1],
+//       amount: parseInt(msg[2]),
+//     };
 
-    res_data = "";
-    axios
-      .post(
-        "http://788c-2409-4072-38e-b3ac-6cae-7ca6-6347-6989.ngrok.io/users/transaction",
-        data
-      )
-      .then((resp) => {
-        console.log("Status Code : ", resp.status);
-        console.log(resp.data);
-        res_data = resp.data;
-        const twiml = new MessagingResponse();
-        // console.log("TWIMIL", twiml);
+//     res_data = "";
+//     axios
+//       .post(
+//         "http://788c-2409-4072-38e-b3ac-6cae-7ca6-6347-6989.ngrok.io/users/transaction",
+//         data
+//       )
+//       .then((resp) => {
+//         console.log("Status Code : ", resp.status);
+//         console.log(resp.data);
+//         res_data = resp.data;
+//         const twiml = new MessagingResponse();
+//         // console.log("TWIMIL", twiml);
 
-        const message = twiml.message();
-        message.body(
-          `Payment successful for amount : ${data.amount} to :${resp.data}`
-        );
-        res.writeHead(200, { "Content-Type": "text/xml" });
-        res.end(twiml.toString());
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+//         const message = twiml.message();
+//         message.body(
+//           `Payment successful for amount : ${data.amount} to :${resp.data}`
+//         );
+//         res.writeHead(200, { "Content-Type": "text/xml" });
+//         res.end(twiml.toString());
+//       })
+//       .catch((error) => {
+//         console.log(error);
+//       });
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// };
 
-    //   {
-    //     "To": "0miKWN5lmMVIuhlA7wEhuiUR2q22",
-    //     "From": "0FLRKrDtFHWIHy65lFhq35G0SvW2",
-    //     "amount": 2000
-    // }
-    // console.log("Message = ", msg);
-
-    // console.log("Message body", message);
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-};
-
-module.exports = {
-  msgReply,
-};
+// module.exports = {
+//   msgReply,
+// };
 
 // function decrypt(message) {
 //   let decrypt = message.split("");
