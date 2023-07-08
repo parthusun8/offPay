@@ -8,6 +8,7 @@ router.post("/loginWithEmail", userController.login_using_email);
 router.post("/loginWithPhone", userController.login_using_phone);
 router.post("/deleteUser", userController.deleteUser);
 router.post("/transaction", userController.transaction);
+router.post("/addBalance", userController.addBalance);
 
 // /api/users/........
 // router.post("/signup", userController.user_register);

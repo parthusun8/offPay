@@ -220,4 +220,5 @@ module.exports = {
   login_using_phone,
   deleteUser,
   transaction,
+  addBalance,
 }
