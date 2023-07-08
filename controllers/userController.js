@@ -5,6 +5,7 @@ const MessagingResponse = require("twilio").twiml.MessagingResponse;
 const login_using_email = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email, password);
     if (!email || !password) {
       res.status(201).send({ error: "Please fill all the fields" });
       return;
